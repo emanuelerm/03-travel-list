@@ -1,25 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import Logo from "./Logo";
+import Form from "./Form";
+import PackingList from "./PackingList";
+import Stats from "./Stats";
+import Modal from "./Modal";
+import { useState } from "react";
 
-function App() {
+export default function App() {
+  const [items, setItems] = useState([]);
+  const [modal, setModal] = useState(false);
+
+  function handleAddItem(item) {
+    setItems((items) => [...items, item]);
+  }
+
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
+
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
+  function handleOpenModal() {
+    if (!items.length) return;
+    setModal(!modal);
+  }
+
+  function handleClearList() {
+    setItems([]);
+    setModal(!modal);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <Logo />
+      <Form onAddItems={handleAddItem} />
+      <PackingList
+        items={items}
+        onDeleteItem={handleDeleteItem}
+        onToggleItem={handleToggleItem}
+        onClearList={handleOpenModal}
+      />
+      <Stats items={items} />
+      {modal && (
+        <Modal
+          onClearList={handleClearList}
+          handleCloseModal={handleOpenModal}
+        />
+      )}
     </div>
   );
 }
-
-export default App;
